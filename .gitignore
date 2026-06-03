@@ -1,0 +1,12 @@
+node_modules/
+out/
+dist/
+.env
+*.local
+*.tsbuildinfo
+
+# generated from build/icon.png by scripts/make-icon.js
+build/icon.ico
+
+# stray dev logs
+__dev_*.txt

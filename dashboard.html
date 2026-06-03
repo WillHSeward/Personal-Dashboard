@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.5.0/dist/tabler-icons.min.css" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e0f13;
+    --panel:#16181e;
+    --panel-hover:#1a1d24;
+    --border:#25272f;
+    --border-hover:#34373f;
+    --text:#e8e6df;
+    --text-bright:#f0eee7;
+    --muted:#8a8880;
+    --dim:#7c7a72;
+    --faint:#6f6d66;
+    --accent-warm:#d98a4a;
+    --accent-hot:#e2533f;
+    --accent-green:#4a9d7f;
+    --accent-gold:#c9a23f;
+    --accent-purple:#7f77dd;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Inter Tight',system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:32px 20px 60px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  .wrap{width:100%;max-width:900px}
+
+  /* header */
+  .topbar{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    margin-bottom:26px;
+    opacity:0;transform:translateY(8px);
+    animation:rise .6s .05s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  .eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+  .greeting{font-size:30px;font-weight:500;margin-top:4px;line-height:1.1;color:var(--text-bright)}
+  .clock{font-size:34px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--text-bright);line-height:1}
+  .sub-right{font-size:12px;color:var(--faint);margin-top:4px;text-align:right}
+
+  /* grid */
+  .grid{display:grid;grid-template-columns:1.15fr 1fr;gap:14px}
+
+  .panel{
+    background:var(--panel);
+    border:0.5px solid var(--border);
+    border-radius:14px;
+    padding:18px 20px;
+    opacity:0;transform:translateY(12px);
+    animation:rise .6s cubic-bezier(.2,.7,.3,1) forwards;
+    transition:transform .25s cubic-bezier(.2,.7,.3,1), border-color .25s, background .25s;
+  }
+  .panel:hover{transform:translateY(-3px);border-color:var(--border-hover);background:var(--panel-hover)}
+  .panel:nth-child(1){animation-delay:.12s}
+  .panel:nth-child(2){animation-delay:.18s}
+  .panel:nth-child(3){animation-delay:.24s}
+  .panel:nth-child(4){animation-delay:.30s}
+
+  .phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .ptitle{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .phead i{font-size:18px}
+
+  /* due dates */
+  .duelist{display:flex;flex-direction:column;gap:13px}
+  .due{display:flex;gap:12px;align-items:flex-start}
+  .duebar{width:3px;align-self:stretch;border-radius:2px}
+  .due .name{font-size:15px;font-weight:500}
+  .due .course{font-size:12px;color:var(--dim)}
+  .due .when{font-size:12px;white-space:nowrap}
+
+  /* table */
+  .tbl{display:flex;flex-direction:column;gap:8px;font-variant-numeric:tabular-nums}
+  .trow{display:flex;align-items:center;font-size:14px;padding:3px 0;border-radius:6px;transition:background .15s}
+  .trow:hover{background:#1e2129}
+  .thead{font-size:13px;color:var(--faint)}
+  .trow .pos{width:22px}
+  .trow .club{flex:1}
+  .trow .p{width:28px;text-align:center;color:var(--dim)}
+  .trow .pts{width:32px;text-align:center;font-weight:500}
+  .top4{color:var(--accent-green);font-weight:500}
+
+  /* clash */
+  .trophy{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+  .trophy .num{font-size:28px;font-weight:500;color:var(--text-bright);font-variant-numeric:tabular-nums}
+  .trophy .delta{font-size:12px;color:var(--accent-green)}
+  .deckcaption{font-size:12px;color:var(--dim);margin-bottom:6px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-size:12px;background:#222530;border-radius:6px;padding:4px 9px;transition:background .15s}
+  .chip:hover{background:#2a2e3a}
+
+  /* bookmarks */
+  .bmlist{display:flex;flex-direction:column;gap:11px}
+  .bm{display:flex;gap:10px;align-items:center;font-size:14px;cursor:pointer;color:var(--text);text-decoration:none;border-radius:6px;padding:2px 4px;margin:-2px -4px;transition:background .15s,color .15s}
+  .bm:hover{background:#1e2129;color:var(--text-bright)}
+  .bm i{font-size:16px;color:var(--dim);transition:color .15s}
+  .bm:hover i{color:var(--accent-purple)}
+
+  @keyframes rise{to{opacity:1;transform:translateY(0)}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;opacity:1!important;transform:none!important}}
+  @media (max-width:620px){.grid{grid-template-columns:1fr}.greeting{font-size:24px}.clock{font-size:28px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1 class="sr-only">Personal dashboard</h1>
+
+  <header class="topbar">
+    <div>
+      <div class="eyebrow" id="date">—</div>
+      <div class="greeting" id="greeting">Good evening, Will</div>
+    </div>
+    <div>
+      <div class="clock" id="clock">--:--</div>
+      <div class="sub-right" id="weather">Chicago · 18° clear</div>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <section class="panel">
+      <div class="phead"><span class="ptitle">Due soon</span><i class="ti ti-school" style="color:var(--accent-warm)" aria-hidden="true"></i></div>
+      <div class="duelist" id="duelist"></div>
+    </section>
+
+    <section class="panel">
+      <div class="phead"><span class="ptitle">Premier League</span><i class="ti ti-ball-football" style="color:var(--accent-green)" aria-hidden="true"></i></div>
+      <div class="tbl" id="table"></div>
+    </section>
+
+    <section class="panel">
+      <div class="phead"><span class="ptitle">Clash Royale</span><i class="ti ti-cards" style="color:var(--accent-gold)" aria-hidden="true"></i></div>
+      <div class="trophy"><span class="num" id="trophies">0</span><span class="delta">▲ 38 trophies this week</span></div>
+      <div class="deckcaption">Most-played deck</div>
+      <div class="chips" id="chips"></div>
+    </section>
+
+    <section class="panel">
+      <div class="phead"><span class="ptitle">Bookmarks</span><i class="ti ti-bookmark" style="color:var(--accent-purple)" aria-hidden="true"></i></div>
+      <div class="bmlist" id="bookmarks"></div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+  // ---- PLACEHOLDER DATA (later this comes from GET /dashboard) ----
+  const data = {
+    due: [
+      {name:"SE-433 — Lab 7 writeup", course:"Software Testing & QA", when:"in 6 hrs", color:"var(--accent-hot)"},
+      {name:"Reading response 4", course:"Ethics in Computing", when:"Tomorrow", color:"var(--accent-warm)"},
+      {name:"Project milestone 2", course:"SE-433", when:"Fri", color:"#56544c"},
+    ],
+    table: [
+      {pos:1, club:"Arsenal", p:37, pts:86, top4:true},
+      {pos:2, club:"Man City", p:37, pts:83, top4:true},
+      {pos:3, club:"Liverpool", p:37, pts:79, top4:true},
+      {pos:4, club:"Aston Villa", p:37, pts:68, top4:false},
+    ],
+    trophies: 7214,
+    deck: ["Hog Rider","Fireball","Musketeer","+5"],
+    bookmarks: [
+      {icon:"ti-brand-github", label:"dashboard repo — issues", url:"#"},
+      {icon:"ti-file-text", label:"CFG study packet", url:"#"},
+      {icon:"ti-book", label:"FastAPI docs — background tasks", url:"#"},
+      {icon:"ti-ball-football", label:"World Cup 2026 schedule", url:"#"},
+    ],
+  };
+
+  // ---- render ----
+  const due = document.getElementById('duelist');
+  data.due.forEach(d=>{
+    due.insertAdjacentHTML('beforeend',
+      `<div class="due"><div class="duebar" style="background:${d.color}"></div>`+
+      `<div style="flex:1"><div class="name">${d.name}</div><div class="course">${d.course}</div></div>`+
+      `<div class="when" style="color:${d.color==='#56544c'?'var(--dim)':d.color}">${d.when}</div></div>`);
+  });
+
+  const table = document.getElementById('table');
+  table.insertAdjacentHTML('beforeend',
+    `<div class="trow thead"><span class="pos">#</span><span class="club">Club</span><span class="p">P</span><span class="pts">Pts</span></div>`);
+  data.table.forEach(t=>{
+    table.insertAdjacentHTML('beforeend',
+      `<div class="trow" style="${t.top4?'':'opacity:.6'}"><span class="pos ${t.top4?'top4':''}">${t.pos}</span>`+
+      `<span class="club">${t.club}</span><span class="p">${t.p}</span><span class="pts">${t.pts}</span></div>`);
+  });
+
+  const chips = document.getElementById('chips');
+  data.deck.forEach(c=> chips.insertAdjacentHTML('beforeend',`<span class="chip">${c}</span>`));
+
+  const bm = document.getElementById('bookmarks');
+  data.bookmarks.forEach(b=>{
+    bm.insertAdjacentHTML('beforeend',
+      `<a class="bm" href="${b.url}"><i class="ti ${b.icon}" aria-hidden="true"></i><span>${b.label}</span></a>`);
+  });
+
+  // ---- count-up animation for trophies ----
+  (function(){
+    const el=document.getElementById('trophies'); const target=data.trophies; const dur=900; const start=performance.now();
+    const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    if(reduce){el.textContent=target.toLocaleString();return;}
+    function tick(now){const t=Math.min((now-start)/dur,1);const e=1-Math.pow(1-t,3);
+      el.textContent=Math.round(target*e).toLocaleString(); if(t<1)requestAnimationFrame(tick);}
+    requestAnimationFrame(tick);
+  })();
+
+  // ---- live clock + greeting + date ----
+  function pad(n){return String(n).padStart(2,'0');}
+  function update(){
+    const now=new Date();
+    document.getElementById('clock').textContent=pad(now.getHours())+':'+pad(now.getMinutes());
+    const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('date').textContent=`${days[now.getDay()]} · ${now.getDate()} ${months[now.getMonth()]}`;
+    const h=now.getHours();
+    const part=h<12?'morning':h<18?'afternoon':'evening';
+    document.getElementById('greeting').textContent=`Good ${part}, Will`;
+  }
+  update(); setInterval(update,1000*20);
+</script>
+</body>
+</html>
